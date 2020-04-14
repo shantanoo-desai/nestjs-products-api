@@ -67,6 +67,7 @@ describe('ProductsService', () => {
           useValue: {
             new: jest.fn().mockResolvedValue(mockProduct()),
             constructor: jest.fn().mockResolvedValue(mockProduct()),
+            findById: jest.fn(),
             find: jest.fn(),
             findOne: jest.fn(),
             update: jest.fn(),
@@ -96,5 +97,17 @@ describe('ProductsService', () => {
     } as any);
     const products = await service.getProducts();
     expect(products).toEqual(productArray);
+  });
+
+  it('should return a product for given ID', async() => {
+    jest.spyOn(model, 'findById').mockReturnValue({
+      exec: jest.fn().mockResolvedValueOnce(
+        mockProductDoc({id: 'uuid1', title: 'Title1', description: 'Description1', price: 50.99})
+      ),
+    } as any);
+    const findMockProduct = mockProduct('uuid1', 'Title1', 'Description1', 50.99);
+    const foundProduct = await service.getSingleProduct('uuid1');
+    expect(foundProduct).toEqual(findMockProduct);
+
   });
 });
