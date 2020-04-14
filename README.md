@@ -1,5 +1,7 @@
 # NESTJS-Products-API
 
+[![Build Status](https://travis-ci.org/shantanoo-desai/nestjs-products-api.svg?branch=master)](https://travis-ci.org/shantanoo-desai/nestjs-products-api)
+
 Academind's Video Tutorial on making RESTful API __Nest__ with __MongoDB__.
 
 This repository will work on integrating Tests with Travis-CI and Docker.
