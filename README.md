@@ -12,6 +12,8 @@ $ npm install
 
 ## Running the app
 
+Use a `.env` file to load the App Port and MONGODB Cluster's URL to connect to MongoDB. See `sampleENV.env` for details.
+
 ```bash
 # development
 $ npm run start
