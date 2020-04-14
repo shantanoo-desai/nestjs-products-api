@@ -11,10 +11,10 @@ const mockProduct: (
   description?: string,
   price?: number
 ) => Product = (
-  id: string = 'uuid1',
-  title: string = 'Title1',
-  description: string = 'Description1',
-  price: number = 10.99
+  id = 'uuid1',
+  title = 'Title1',
+  description = 'Description1',
+  price = 10.99
 ) => {
   return {
     id,
