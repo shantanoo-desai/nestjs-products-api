@@ -4,6 +4,7 @@ import { Product } from './interfaces/product.interface';
 import { ProductDoc } from './interfaces/product-document.interface';
 import { Model } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
+import { async } from 'rxjs/internal/scheduler/async';
 
 const mockProduct: (
   id?: string,
@@ -109,5 +110,21 @@ describe('ProductsService', () => {
     const foundProduct = await service.getSingleProduct('uuid1');
     expect(foundProduct).toEqual(findMockProduct);
 
+  });
+
+  it('should create a new product', async() => {
+    jest.spyOn(model, 'create').mockResolvedValueOnce({
+      id: 'newID',
+      title: 'New Title',
+      description: 'New Description',
+      price: 100.00
+    } as any);
+    
+    const newProduct = await service.insertProduct({
+      title: 'New Title',
+      description: 'New Description',
+      price: 100.00
+    });
+    expect(newProduct).toEqual('newID');
   });
 });

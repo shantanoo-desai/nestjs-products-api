@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
+import { ProductDTO } from './product.dto';
 
 const testTitle = 'Amazing Title Test';
 const testDescription = 'Wow what a description';
@@ -29,6 +30,11 @@ describe('Products Controller', () => {
                 description: testDescription,
                 price: 60.00,
               }),
+            ),
+            insertProduct: jest.fn().mockImplementation((product: ProductDTO) => 
+              Promise.resolve(
+                'newID',
+              ),
             ),
           }
         }
@@ -77,5 +83,18 @@ describe('Products Controller', () => {
         price: 60.00,
       });
     })
+  });
+
+  describe('addProduct', () => {
+    it('should add a new product', () => {
+      const newProductDTO: ProductDTO = {
+         title: 'New Title',
+         description: 'New Description',
+         price: 100.00,
+      };
+      expect(controller.addProduct(newProductDTO)).resolves.toEqual({
+        id: 'newID'
+      });
+    });
   });
 });
