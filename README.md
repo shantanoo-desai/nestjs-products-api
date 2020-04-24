@@ -39,3 +39,16 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## Docker
+
+### Development 
+
+Run the image:
+
+    docker build -t nestjs-products-api .
+
+### Production
+
+    docker run -d --name="nestjs-api" -p 3000:3000 -e DATABASE_URL="<MongoDB_URI>" nestjs-products-api:latest
+
