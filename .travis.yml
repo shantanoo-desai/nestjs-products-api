@@ -13,8 +13,9 @@ cache:
 
 after_success:
     - docker build -t nestjs-products-api .
+    - docker tag nestjs-products-api:latest $DOCKER_USERNAME/nestjs-products-api:latest
     - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
-        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD ;
+    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin ;
         docker push $DOCKER_USERNAME/nestjs-products-api:latest ;
       fi
 
