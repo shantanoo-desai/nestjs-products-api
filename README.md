@@ -52,3 +52,12 @@ Run the image:
 
     docker run -d --name="nestjs-api" -p 3000:3000 -e DATABASE_URL="<MongoDB_URI>" nestjs-products-api:latest
 
+
+## Travis-CI Automated Docker Build
+
+1. Create an __Access-Token__ from [Docker Hub Security Settings](https://hub.docker.com/settings/security)
+
+2. In your __Travis-CI Build Settings__ add `DOCKER_USERNAME` and `DOCKER_PASSWORD` as environment variables, where `DOCKER_PASSWORD` is the generated __Access-Token__
+
+3. Refer to `.travis.yml` for automated build
+
