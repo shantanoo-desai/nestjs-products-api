@@ -15,7 +15,7 @@ after_success:
     - docker build -t nestjs-products-api .
 
 before_deploy:
-    - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" docker.io ;
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin docker.io ;
     - docker tag nestjs-products-api $DOCKER_USERNAME/nestjs-products-api:latest
 
 deploy:
