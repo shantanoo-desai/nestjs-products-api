@@ -10,11 +10,10 @@ import { ProductsModule } from './products/products.module';
 @Module({
   imports: [
     ProductsModule,
-    MongooseModule.forRoot(process.env.DATABASE_URL, 
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-      })
+    MongooseModule.forRoot(process.env.DATABASE_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

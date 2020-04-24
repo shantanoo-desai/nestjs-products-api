@@ -4,18 +4,19 @@ import { Product } from './interfaces/product.interface';
 import { ProductDoc } from './interfaces/product-document.interface';
 import { Model } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
-import { async } from 'rxjs/internal/scheduler/async';
+import { ProductDTO } from './product.dto';
+import { ProductRepository } from './products.repository';
 
 const mockProduct: (
   id?: string,
   title?: string,
   description?: string,
-  price?: number
+  price?: number,
 ) => Product = (
   id = 'uuid1',
   title = 'Title1',
   description = 'Description1',
-  price = 10.99
+  price = 10.99,
 ) => {
   return {
     id,
@@ -46,14 +47,23 @@ const mockProductDoc: (mock?: {
 
 const productArray: Product[] = [
   mockProduct(),
-  mockProduct('uuid2', 'Title2', 'Description2', 11.00),
+  mockProduct('uuid2', 'Title2', 'Description2', 11.0),
 ];
 
 const productDocArray = [
   mockProductDoc(),
-  mockProductDoc({id: 'uuid2', title: 'Title2', description: 'Description2', price: 11.00}),
+  mockProductDoc({
+    id: 'uuid2',
+    title: 'Title2',
+    description: 'Description2',
+    price: 11.0,
+  }),
 ];
 
+const mockProductRepository = {
+  findProduct: jest.fn(),
+  save: jest.fn(),
+};
 
 describe('ProductsService', () => {
   let service: ProductsService;
@@ -75,8 +85,14 @@ describe('ProductsService', () => {
             create: jest.fn(),
             remove: jest.fn(),
             exec: jest.fn(),
+            deleteOne: jest.fn(),
           },
         },
+        ProductsService,
+        {
+          provide: ProductRepository,
+          useValue: mockProductRepository,
+        }
       ],
     }).compile();
 
@@ -92,7 +108,7 @@ describe('ProductsService', () => {
     jest.clearAllMocks();
   });
 
-  it('should return all products', async() => {
+  it('should return all products', async () => {
     jest.spyOn(model, 'find').mockReturnValue({
       exec: jest.fn().mockResolvedValueOnce(productDocArray),
     } as any);
@@ -100,31 +116,57 @@ describe('ProductsService', () => {
     expect(products).toEqual(productArray);
   });
 
-  it('should return a product for given ID', async() => {
-    jest.spyOn(model, 'findById').mockReturnValue({
-      exec: jest.fn().mockResolvedValueOnce(
-        mockProductDoc({id: 'uuid1', title: 'Title1', description: 'Description1', price: 50.99})
-      ),
-    } as any);
-    const findMockProduct = mockProduct('uuid1', 'Title1', 'Description1', 50.99);
-    const foundProduct = await service.getSingleProduct('uuid1');
-    expect(foundProduct).toEqual(findMockProduct);
-
+  it('should return a product for given ID', async () => {
+    const findProductStub = {id: 'uuid1', title: 'Title1', description: 'Description1', price: 50.99};
+    mockProductRepository.findProduct.mockResolvedValue(findProductStub);
+    const result = await service.getSingleProduct('uuid1');
+    expect(result).toEqual({id: 'uuid1', title: 'Title1', description: 'Description1', price: 50.99});
   });
 
-  it('should create a new product', async() => {
+  it('should create a new product', async () => {
     jest.spyOn(model, 'create').mockResolvedValueOnce({
       id: 'newID',
       title: 'New Title',
       description: 'New Description',
-      price: 100.00
+      price: 100.0,
     } as any);
-    
+
     const newProduct = await service.insertProduct({
       title: 'New Title',
       description: 'New Description',
-      price: 100.00
+      price: 100.0,
     });
     expect(newProduct).toEqual('newID');
+  });
+
+  it('should update a product', async() => {
+    const findProductStub = {id: 'uuid1', title: 'Title1', description: 'Description1', price: 50.99};
+    mockProductRepository.findProduct.mockResolvedValue(findProductStub);
+    const saveProductStub = {id: 'uuid1', title: 'New Title', description: 'Description1', price: 200.00};
+    mockProductRepository.save.mockResolvedValue(saveProductStub);
+    const productToUpdateDto: ProductDTO = {id: 'uuid1', title: 'New Title', price: 200.00};
+    const result = await service.updateProduct(productToUpdateDto);
+    expect(result).toEqual({id: 'uuid1', title: 'New Title', description: 'Description1', price: 200.00})
+  });
+
+  it('should delete a product', async () => {
+    jest.spyOn(model, 'deleteOne').mockReturnValue({
+      exec: jest.fn().mockResolvedValueOnce({
+        n: 1,
+      }),
+    } as any);
+    expect(await service.deleteAProduct('uuid1')).toEqual({ deleted: true });
+  });
+
+  it('should not delete a product', async () => {
+    jest.spyOn(model, 'deleteOne').mockReturnValue({
+      exec: jest.fn().mockResolvedValueOnce({
+        n: 0,
+      }),
+    } as any);
+    expect(await service.deleteAProduct('bad ID')).toEqual({
+      deleted: false,
+      message: 'Could Not Delete Product. No Such Product Exists',
+    });
   });
 });
