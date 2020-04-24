@@ -122,4 +122,10 @@ describe('Products Controller', () => {
       });
     });
   });
+
+  describe('removeAProduct', () => {
+    it('should delete an existing product', () => {
+      expect(controller.removeProduct('a uuid that exists')).resolves.toEqual(null);
+    });
+  });
 });
