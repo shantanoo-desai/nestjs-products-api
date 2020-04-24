@@ -71,17 +71,4 @@ export class ProductsService {
       return { deleted: true };
     }
   }
-
-  // private async findProduct(productID: string): Promise<ProductDoc> {
-  //     let product;
-  //     try {
-  //         product = await this.productModel.findById(productID).exec();
-  //     } catch(error) {
-  //         throw new NotFoundException('Could Not Find Product for given ID.');
-  //     }
-  //     if (!product) {
-  //         throw new NotFoundException('Could Not Find Product for given ID.');
-  //     }
-  //     return product;
-  // }
 }
