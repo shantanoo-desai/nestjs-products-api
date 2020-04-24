@@ -6,6 +6,7 @@ import { ProductDTO } from './product.dto';
 const testTitle = 'Amazing Title Test';
 const testDescription = 'Wow what a description';
 
+
 describe('Products Controller', () => {
   let controller: ProductsController;
   let service: ProductsService;
@@ -17,28 +18,38 @@ describe('Products Controller', () => {
         {
           provide: ProductsService,
           useValue: {
-            getProducts: jest.fn().mockResolvedValue(
-              [
-                {id: 'uuid1', title: 'Title1', description: 'Description1', price: 10.99},
-                {id: 'uuid2', title: 'Title2', description: 'Description2', price: 11.00}
-              ]
-            ),
+            getProducts: jest.fn().mockResolvedValue([
+              {
+                id: 'uuid1',
+                title: 'Title1',
+                description: 'Description1',
+                price: 10.99,
+              },
+              {
+                id: 'uuid2',
+                title: 'Title2',
+                description: 'Description2',
+                price: 11.0,
+              },
+            ]),
             getSingleProduct: jest.fn().mockImplementation((id: string) =>
               Promise.resolve({
                 id: id,
                 title: testTitle,
                 description: testDescription,
-                price: 60.00,
+                price: 60.0,
               }),
             ),
-            insertProduct: jest.fn().mockImplementation((product: ProductDTO) => 
-              Promise.resolve(
-                'newID',
-              ),
+            insertProduct: jest.fn().mockImplementation((product: ProductDTO) =>
+                Promise.resolve('newID'),
             ),
-          }
-        }
-      ]
+            updateProduct: jest.fn().mockImplementation((product: ProductDTO) =>
+                Promise.resolve({ id: 'existing ID', ...product}),
+            ),
+            deleteAProduct: jest.fn().mockResolvedValue({deleted: true}),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<ProductsController>(ProductsController);
@@ -56,14 +67,14 @@ describe('Products Controller', () => {
           id: 'uuid1',
           title: 'Title1',
           description: 'Description1',
-          price: 10.99
+          price: 10.99,
         },
         {
           id: 'uuid2',
           title: 'Title2',
           description: 'Description2',
-          price: 11.00
-        }
+          price: 11.0,
+        },
       ]);
     });
   });
@@ -74,26 +85,40 @@ describe('Products Controller', () => {
         id: 'inputID',
         title: testTitle,
         description: testDescription,
-        price: 60.00,
+        price: 60.0,
       });
       expect(controller.getAProduct('anotherUniqueID')).resolves.toEqual({
         id: 'anotherUniqueID',
         title: testTitle,
         description: testDescription,
-        price: 60.00,
+        price: 60.0,
       });
-    })
+    });
   });
 
   describe('addProduct', () => {
     it('should add a new product', () => {
       const newProductDTO: ProductDTO = {
-         title: 'New Title',
-         description: 'New Description',
-         price: 100.00,
+        title: 'New Title',
+        description: 'New Description',
+        price: 100.0,
       };
       expect(controller.addProduct(newProductDTO)).resolves.toEqual({
-        id: 'newID'
+        id: 'newID',
+      });
+    });
+  });
+
+  describe('updateAProduct', () => {
+    it('should update an existing product', () => {
+      const updatedProductDTO: ProductDTO = {
+        title: 'updated title',
+        price: 200.0,
+        description: 'Description1'
+      };
+      expect(controller.updateAProduct('existing ID', updatedProductDTO)).resolves.toEqual({
+        id: 'existing ID',
+        ...updatedProductDTO
       });
     });
   });
