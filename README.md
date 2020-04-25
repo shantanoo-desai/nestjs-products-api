@@ -55,6 +55,8 @@ Run the image:
 
 ## Travis-CI Automated Docker Build
 
+[Medium.com Blog for Setting up the CI](https://medium.com/@shantanoodesai/ci-cd-notes-nest-js-travis-ci-docker-75843ab2287e)
+
 1. Create an __Access-Token__ from [Docker Hub Security Settings](https://hub.docker.com/settings/security)
 
 2. In your __Travis-CI Build Settings__ add `DOCKER_USERNAME` and `DOCKER_PASSWORD` as environment variables, where `DOCKER_PASSWORD` is the generated __Access-Token__
